@@ -20,3 +20,20 @@ exports.login = (req, res, next) => {
         });
     })(req, res, next);
 };
+
+
+// Register Controller
+exports.register = (req, res, next) => {
+    passport.authenticate('register', (err, user, info) => {
+        if (err) return res.status(500).send(err);
+        if (info) return res.status(403).send(info.message);
+
+        req.login(user, err => {
+            const data = { email: req.body.email, role: req.body.role };
+            User.findOne({ where: { email: data.email } })
+                .then(user => user.update({ role: data.role }))
+                .then(() => res.status(200).send({ message: 'User created' }))
+                .catch(err => res.status(400).send(err));
+        });
+    })(req, res, next);
+};
