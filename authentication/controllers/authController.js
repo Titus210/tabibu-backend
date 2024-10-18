@@ -37,3 +37,24 @@ exports.register = (req, res, next) => {
         });
     })(req, res, next);
 };
+
+
+
+// Forgot Password Controller
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) return res.status(404).send({ message: 'User not found' });
+
+        const token = crypto.randomBytes(20).toString('hex');
+        const resetLink = `http://localhost:30002.com/reset-password?token=${token}`;
+
+        user.update({ reset_password_token: token, reset_password_expires: Date.now() + 3600000 });
+
+        await emailService.sendResetPasswordEmail(user.email, resetLink);
+        res.status(200).send({ message: 'Reset link sent to email' });
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
