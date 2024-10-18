@@ -5,6 +5,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
+
 // Local Strategy for email/password authentication
 passport.use(
     new LocalStrategy(
@@ -27,25 +28,3 @@ passport.use(
         }
     )
 );
-
-// JWT Strategy for token-based authentication
-passport.use(
-    new JwtStrategy(
-        {
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: process.env.JWT_SECRET
-        },
-        async (jwtPayload, done) => {
-            try {
-                const user = await User.findByPk(jwtPayload.id);
-                if (!user) return done(null, false, { message: 'User not found' });
-
-                return done(null, user);
-            } catch (err) {
-                return done(err);
-            }
-        }
-    )
-);
-
-module.exports = passport;
