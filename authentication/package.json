@@ -4,7 +4,7 @@
   "main": "authentication.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon authenticationRoutes.js"
+    "watch": "nodemon authentication.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "nodemon": "^3.1.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "pg": "^8.13.0",
     "sequelize": "^6.37.4"
   }
 }
