@@ -1,3 +1,4 @@
+const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
@@ -21,22 +22,34 @@ exports.login = (req, res, next) => {
     })(req, res, next);
 };
 
-
 // Register Controller
-exports.register = (req, res, next) => {
-    passport.authenticate('register', (err, user, info) => {
-        if (err) return res.status(500).send(err);
-        if (info) return res.status(403).send(info.message);
+exports.register = async (req, res, next) => {
+    try {
+        const { email, password, role } = req.body;
 
-        req.login(user, err => {
-            const data = { email: req.body.email, role: req.body.role };
-            User.findOne({ where: { email: data.email } })
-                .then(user => user.update({ role: data.role }))
-                .then(() => res.status(200).send({ message: 'User created' }))
-                .catch(err => res.status(400).send(err));
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new user
+        const user = await User.create({
+            email,
+            password_hash: hashedPassword, // Assuming this is the field for the hashed password
+            user_type: role
         });
-    })(req, res, next);
+
+        // Automatically log the user in
+        req.login(user, { session: false }, (err) => {
+            if (err) return res.status(500).send(err);
+
+            const token = jwt.sign({ id: user.user_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.json({ user, token });
+        });
+
+    } catch (err) {
+        res.status(500).send({ message: 'Error registering user', error: err });
+    }
 };
+
 
 
 
