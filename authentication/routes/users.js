@@ -30,5 +30,15 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Read all users
+router.get('/', async (req, res) => {
+    try {
+        const [users] = await pool.execute('SELECT * FROM users');
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 module.exports = router;
