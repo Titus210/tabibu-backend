@@ -5,6 +5,9 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
+// Log JWT Secret
+console.log('JWT Secret:', process.env.JWT_SECRET);
+
 // Local Strategy for email/password authentication
 passport.use(
     new LocalStrategy(
@@ -27,7 +30,6 @@ passport.use(
         }
     )
 );
-
 
 // JWT Strategy for token-based authentication
 passport.use(
