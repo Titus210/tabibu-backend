@@ -20,7 +20,7 @@ async function addUserProfile(profileData) {
         const [result] = await pool.execute(query, [user_id, full_name, phone, date_of_birth, address, gender]);
         return result;
     } catch (error) {
-        console.error("Database error:", error.message);  // Log specific database error
+        console.error("Database error:", error.message); 
         throw error;
     }
 }
@@ -41,4 +41,20 @@ async function createUser(email, password, role) {
     return { exists: false, insertId: result.insertId };
 }
 
-module.exports = { getUserIdByEmail, addUserProfile, createUser };
+
+// get username by email
+async function getUsernameByEmail(email) {
+    const query = 'SELECT username FROM users WHERE email = ?';
+    try {
+        const [rows] = await pool.execute(query, [email]);
+        if (rows.length > 0) {
+            return rows[0].username;  // Return the username if email exists
+        }
+        return null;  // Return null if email doesn't exist
+    } catch (error) {
+        console.error("Database error:", error.message);
+        throw error;
+    }
+}
+
+module.exports = { getUserIdByEmail, addUserProfile, createUser,  getUsernameByEmail };
