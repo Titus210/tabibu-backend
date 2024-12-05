@@ -22,14 +22,14 @@ exports.checkEmail = async (req, res) => {
 
 exports.validatePassword = async (req, res) => {
     const { password } = req.body;
-    const email = req.session.email;  // Retrieve stored email from session
+    const email = req.session.email;
 
     if (!email) {
         return res.status(400).json({ message: 'Email not found in session. Please start from the beginning.' });
     }
 
     try {
-        // Now, validate password with the user's email
+        // validate password with the user's email
         const user = await dbUtils.getUserByEmailAndPassword(email, password);
 
         if (user) {
